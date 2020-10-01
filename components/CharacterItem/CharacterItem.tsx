@@ -8,8 +8,17 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-export default function CharacterItem() {
+interface characterItemProps {
+  name: string;
+  image: string;
+  species: string;
+  genre: string;
+  type: string;
+}
+
+const CharacterItem: React.FC<characterItemProps> = ({name, image, species, genre, type}) => {
   const navigation = useNavigation();
+  
   return (
     <TouchableWithoutFeedback
       onPress={() => navigation.navigate("CharacterDetail")}
@@ -18,14 +27,16 @@ export default function CharacterItem() {
         <Image
           style={styles.characterImg}
           source={{
-            uri: "https://rickandmortyapi.com/api/character/avatar/253.jpeg",
+            uri: image,
           }}
         />
-        <Text style={styles.characterName}>Character Name</Text>
+        <Text style={styles.characterName}>{name}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
 }
+
+export default CharacterItem;
 
 const styles = StyleSheet.create({
   characterItem: {

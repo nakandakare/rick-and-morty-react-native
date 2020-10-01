@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   SafeAreaView,
+  Platform
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import RootStackParamList from "../../RootStackParamList";
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     backgroundColor: "#18191a",
+    paddingTop: Platform.OS === 'android' ? 25 : 0
   },
   screenInnerContainer: {
     height: "100%",

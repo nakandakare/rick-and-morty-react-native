@@ -2,17 +2,24 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableWithoutFeedback } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-export default function Item() {
+interface itemProps {
+  name: string;
+  attOne: string
+}
+
+const Item:React.FC<itemProps> = ({name, attOne}) => {
   const navigation = useNavigation();
   return (
     <TouchableWithoutFeedback onPress={() => navigation.navigate("ItemDetail")}>
       <View style={styles.item}>
-        <Text style={styles.itemTitle}>Episode/Locaiton Name</Text>
-        <Text style={styles.itemText}>Attribute</Text>
+        <Text style={styles.itemTitle}>{name}</Text>
+        <Text style={styles.itemText}>{attOne}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
 }
+
+export default Item;
 
 const styles = StyleSheet.create({
   item: {
