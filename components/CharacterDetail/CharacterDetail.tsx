@@ -1,23 +1,39 @@
 import React from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 
-export default function CharacterDetail() {
+interface navigationProp {
+  route: {
+    params: {
+      item: {
+        name: string,
+        image: string,
+        species: string,
+        gender: string,
+        type: string
+      }
+    }
+  }
+}
+
+export default function CharacterDetail({route}: navigationProp) {
+    /*get the param from navigation*/ 
+    const {name, image, species, gender, type} = route.params.item;
   return (
     <View style={styles.characterDetailContainer}>
       <View style={styles.characterDetailInner}>
         <View style={styles.characterDetailMain}>
           <Image
             source={{
-              uri: "https://rickandmortyapi.com/api/character/avatar/253.jpeg",
+              uri: image,
             }}
             style={styles.characterImg}
           />
-          <Text style={styles.characterName}>CHARACTER NAME</Text>
+          <Text style={styles.characterName}>{name}</Text>
         </View>
         <View>
-            <Text style={styles.subText}>DataTitle1: Data1</Text>
-            <Text style={styles.subText}>DataTitle2: Data2</Text>
-            <Text style={styles.subText}>DataTitle3: Data3</Text>
+            <Text style={styles.subText}>Species: {species}</Text>
+            <Text style={styles.subText}>Gender: {gender}</Text>
+            <Text style={styles.subText}>Type: {type}</Text>
         </View>
       </View>
     </View>
@@ -52,6 +68,6 @@ const styles = StyleSheet.create({
   subText: {
     color: "white",
     marginVertical: 15,
-    fontSize: 15
+    fontSize: 20
   }
 });

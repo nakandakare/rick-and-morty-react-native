@@ -3,27 +3,32 @@ import { StyleSheet, Text, View, TouchableWithoutFeedback } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 interface itemProps {
-  name: string;
-  attOne: string
+  item: {
+    name: string,
+    dimension: string | undefined,
+    episode: string | undefined
+  }
 }
 
-const Item:React.FC<itemProps> = ({name, attOne}) => {
+const Item: React.FC<itemProps> = ({ item }) => {
   const navigation = useNavigation();
   return (
-    <TouchableWithoutFeedback onPress={() => navigation.navigate("ItemDetail")}>
-      <View style={styles.item}>
-        <Text style={styles.itemTitle}>{name}</Text>
-        <Text style={styles.itemText}>{attOne}</Text>
+    <TouchableWithoutFeedback
+      onPress={() => navigation.navigate("ItemDetail", { item })}
+    >
+      <View style={styles.items}>
+        <Text style={styles.itemTitle}>{item.name}</Text>
+        <Text style={styles.itemText}>{item.dimension || item.episode} </Text>
       </View>
     </TouchableWithoutFeedback>
   );
-}
+};
 
 export default Item;
 
 const styles = StyleSheet.create({
-  item: {
-    width: "90%",
+  items: {
+    width: 300,
     height: 60,
     backgroundColor: "#383d42",
     display: "flex",

@@ -7,27 +7,18 @@ interface OptionProps {
 
 const BottomOption: React.FC<OptionProps> = ({filterState: [filterType, setFilterType]}) => {
     return(
-        <View style={styles.bottomOptionContainer}>
-          <View style={styles.bottomOptionInner}>
+          <View style={styles.bottomOption}>
             <Text style={[styles.text, styles.borderRight]} onPress={() => setFilterType('characters')}>Characters</Text>
             <Text style={[styles.text, styles.borderRight]} onPress={() => setFilterType('locations')}>Locations</Text>
             <Text style={styles.text} onPress={() => setFilterType('episodes')}>Episodes</Text>
           </View>
-        </View>
     )
 }
 
 export default BottomOption;
 
 const styles = StyleSheet.create({
-    bottomOptionContainer: {
-        display: "flex",
-        justifyContent: "center",
-        height: "9%",
-        borderWidth: 1,
-        borderTopColor: "white",
-      },
-      bottomOptionInner: {
+      bottomOption: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-around",

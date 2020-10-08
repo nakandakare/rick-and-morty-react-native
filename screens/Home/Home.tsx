@@ -16,8 +16,12 @@ export default function Home() {
         <View style={styles.homeSearchContainer}>
           <SearchBar placeholder={`Search ${filterType}`} onChangeText={(s) => setSearchInput(s)} value={searchInput}/>
         </View>
-        <ItemsOverview searchInput={searchInput} filterType={filterType}/>
-        <BottomOption filterState={[filterType, setFilterType]}/>
+        <View style={styles.itemOverviewContainer}>
+          <ItemsOverview searchInput={searchInput} filterType={filterType}/>
+        </View>
+        <View style={styles.bottomOptionContainer}>
+          <BottomOption filterState={[filterType, setFilterType]}/>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -41,5 +45,15 @@ const styles = StyleSheet.create({
     height: "9%",
     width: "100%",
     zIndex: 1
+  },
+  bottomOptionContainer: {
+    display: "flex",
+    justifyContent: "center",
+    height: "9%",
+    borderWidth: 1,
+    borderTopColor: "white"
+  },
+  itemOverviewContainer: {
+    height: "81%"
   }
 });

@@ -9,28 +9,26 @@ import {
 import { useNavigation } from "@react-navigation/native";
 
 interface characterItemProps {
-  name: string;
-  image: string;
-  species: string;
-  genre: string;
-  type: string;
+  item: {
+    name: string,
+    image: string
+  }
 }
 
-const CharacterItem: React.FC<characterItemProps> = ({name, image, species, genre, type}) => {
+const CharacterItem: React.FC<characterItemProps> = ({item}) => {
   const navigation = useNavigation();
-  
   return (
     <TouchableWithoutFeedback
-      onPress={() => navigation.navigate("CharacterDetail")}
+      onPress={() => navigation.navigate("CharacterDetail", {item})}
     >
       <View style={styles.characterItem}>
         <Image
           style={styles.characterImg}
           source={{
-            uri: image,
+            uri: item.image,
           }}
         />
-        <Text style={styles.characterName}>{name}</Text>
+        <Text style={styles.characterName}>{item.name}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -40,7 +38,7 @@ export default CharacterItem;
 
 const styles = StyleSheet.create({
   characterItem: {
-    width: "90%",
+    width: 300,
     height: 60,
     backgroundColor: "#383d42",
     display: "flex",

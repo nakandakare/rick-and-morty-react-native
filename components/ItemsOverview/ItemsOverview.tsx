@@ -1,130 +1,159 @@
-import React from "react";
-import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  StyleSheet,
-  View,
-} from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import React, { useRef } from "react";
+import { View, StyleSheet } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import CharacterItem from "../CharacterItem/CharacterItem";
-import Item from "../Item/Item";
-import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/react-hooks";
-import ResultsError from "../ResultsError/ResultsError";
+import { GET_CHARACTERS, GET_LOCATIONS, GET_EPISODES } from "../../queries";
+import Item from "../Item/Item";
 import Spinner from "../Spinner/Spinner";
+import ResultsError from "../ResultsError/ResultsError";
 
 interface ItemOverviewProps {
   searchInput: string;
   filterType: string;
 }
 
-const GET_CHARACTERS = gql`
-  query characters($name: String!, $page: Int) {
-    characters(page: $page, filter: { name: $name }) {
-      info {
-        pages
-        count
-      }
-      results {
-        name
-        image
-        species
-        gender
-        type
-      }
-    }
+interface characterItemProps {
+  item: {
+    name: string,
+    image: string
   }
-`;
+}
 
-const GET_LOCATIONS = gql`
-  query locations($name: String!, $page: Int) {
-    locations(page: $page, filter: { name: $name }) {
-      info {
-        pages
-        count
-      }
-      results {
-        name
-        type
-        dimension
-        residents {
-          name
-          image
-        }
-      }
-    }
+interface itemProps {
+  item: {
+    name: string,
+    dimension: string | undefined,
+    episode: string | undefined
   }
-`;
-
-const GET_EPISODES = gql`
-  query episodes($name: String!, $page: Int) {
-    episodes(page: $page, filter: { name: $name }) {
-      info {
-        pages
-        count
-      }
-      results {
-        name
-        air_date
-        episode
-        characters {
-          name
-          image
-        }
-      }
-    }
-  }
-`;
-
-const onLoadMore = () => {
-  console.log("onLoadMore");
-};
-
-const handleScroll = (
-  e: NativeSyntheticEvent<NativeScrollEvent>,
-  onLoadMore: () => void
-) => {
-  let paddingToBottom = 10;
-  paddingToBottom += e.nativeEvent.layoutMeasurement.height;
-  if (
-    e.nativeEvent.contentOffset.y >=
-    e.nativeEvent.contentSize.height - paddingToBottom
-  ) {
-    onLoadMore();
-  }
-};
+}
 
 const ItemsOverview: React.FC<ItemOverviewProps> = ({
   searchInput,
   filterType,
 }) => {
   //obtiene los datos con apollo, si el input del search es menor a 3 caracteres y no coincide el filterType, se "skippea" el query.
-  const { loading: loadingChar, error: errorChar, data: dataChar } = useQuery(
-    GET_CHARACTERS,
-    {
-      variables: { name: searchInput, page: 1 },
-      skip: !(filterType === "characters") || searchInput.length < 3,
-    }
-  );
+  const {
+    loading: loadingChar,
+    error: errorChar,
+    data: dataChar,
+    fetchMore: fetchMoreChar,
+  } = useQuery(GET_CHARACTERS, {
+    variables: { name: searchInput, page: 1 },
+    skip: !(filterType === "characters") || searchInput.length < 3,
+  });
 
-  const { loading: loadingLoc, error: errorLoc, data: dataLoc } = useQuery(
-    GET_LOCATIONS,
-    {
-      variables: { name: searchInput, page: 1 },
-      skip: !(filterType === "locations") || searchInput.length < 3,
-    }
-  );
+  const {
+    loading: loadingLoc,
+    error: errorLoc,
+    data: dataLoc,
+    fetchMore: fetchMoreLoc,
+  } = useQuery(GET_LOCATIONS, {
+    variables: { name: searchInput, page: 1 },
+    skip: !(filterType === "locations") || searchInput.length < 3,
+  });
 
-  const { loading: loadingEpi, error: errorEpi, data: dataEpi } = useQuery(
-    GET_EPISODES,
-    {
-      variables: { name: searchInput, page: 1 },
-      skip: !(filterType === "episodes") || searchInput.length < 3,
-    }
-  );
+  const {
+    loading: loadingEpi,
+    error: errorEpi,
+    data: dataEpi,
+    fetchMore: fetchMoreEpi,
+  } = useQuery(GET_EPISODES, {
+    variables: { name: searchInput, page: 1 },
+    skip: !(filterType === "episodes") || searchInput.length < 3,
+  });
+
+  if (loadingChar || loadingLoc || loadingEpi) {
+    return <Spinner />;
+  }
+
+  if (errorChar || errorLoc || errorEpi) {
+    return (
+      <ResultsError message={`Error: we could not find the ${filterType}`} />
+    );
+  }
+
+  if (!dataChar && !dataLoc && !dataEpi) {
+    return (
+      <ResultsError
+        message={`Please use the search bar to find the ${filterType}`}
+      />
+    );
+  }
+  const loadMore = () => {
+    filterType === "characters"
+      ? fetchMoreChar({
+          variables: {
+            page: dataChar.characters.info.next,
+          },
+          updateQuery: (_previousResult: any, { fetchMoreResult }: any) => {
+            fetchMoreResult.characters.results = [
+              ..._previousResult.characters.results,
+              ...fetchMoreResult.characters.results,
+            ];
+            return fetchMoreResult;
+          },
+        })
+      : filterType === "locations"
+      ? fetchMoreLoc({
+          variables: {
+            page: dataLoc.locations.info.next,
+          },
+          updateQuery: (_previousResult: any, { fetchMoreResult }: any) => {
+            fetchMoreResult.locations.results = [
+              ..._previousResult.locations.results,
+              ...fetchMoreResult.locations.results,
+            ];
+            return fetchMoreResult;
+          },
+        })
+      : filterType === "episodes"
+      ? fetchMoreEpi({
+          variables: {
+            page: dataEpi.episodes.info.next,
+          },
+          updateQuery: (_previousResult: any, { fetchMoreResult }: any) => {
+            fetchMoreResult.episodes.results = [
+              ..._previousResult.episodes.results,
+              ...fetchMoreResult.episodes.results,
+            ];
+            return fetchMoreResult;
+          },
+        })
+      : null;
+  };
 
   return (
-    <View>
+    <View style={styles.itemsOverview}>
+      {dataChar ? (
+        <FlatList
+          data={dataChar.characters.results}
+          renderItem={({ item }: characterItemProps) => <CharacterItem item={item} />}
+          keyExtractor={(item, index) => index.toString()}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={styles.flatList}
+        />
+      ) : dataLoc ? (
+        <FlatList
+          data={dataLoc.locations.results}
+          renderItem={({ item }: itemProps ) => <Item item={item} />}
+          keyExtractor={(item, index) => index.toString()}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={styles.flatList}
+        />
+      ) : dataEpi ? (
+        <FlatList
+          data={dataEpi.episodes.results}
+          renderItem={({ item }: itemProps ) => <Item item={item} />}
+          keyExtractor={(item, index) => index.toString()}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={styles.flatList}
+        />
+      ) : null}
+      {/*
       <ScrollView
         onScroll={(e) => handleScroll(e, onLoadMore)}
         contentContainerStyle={styles.itemOverviewInner}
@@ -180,6 +209,7 @@ const ItemsOverview: React.FC<ItemOverviewProps> = ({
           )
         ) : null}
       </ScrollView>
+        */}
     </View>
   );
 };
@@ -187,8 +217,12 @@ const ItemsOverview: React.FC<ItemOverviewProps> = ({
 export default ItemsOverview;
 
 const styles = StyleSheet.create({
-    itemOverviewInner: {
-    display: "flex",
+  itemsOverview: {
+    width: 400,
+  },
+  flatList: {
+    flexGrow: 1,
+    width: "100%",
     alignItems: "center",
   },
 });

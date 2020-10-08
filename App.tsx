@@ -7,6 +7,7 @@ import RootStackParamList from "./RootStackParamList";
 import CharacterDetail from "./components/CharacterDetail/CharacterDetail";
 import ItemDetail from "./components/ItemDetail/ItemDetail";
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink } from "@apollo/client";
+import { offsetLimitPagination, concatPagination, relayStylePagination } from "@apollo/client/utilities";
 
 export default function App() {
 
