@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { View, StyleSheet } from "react-native";
+import React from "react";
+import { View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import CharacterItem from "../CharacterItem/CharacterItem";
 import { useQuery } from "@apollo/react-hooks";
@@ -7,6 +7,7 @@ import { GET_CHARACTERS, GET_LOCATIONS, GET_EPISODES } from "../../queries";
 import Item from "../Item/Item";
 import Spinner from "../Spinner/Spinner";
 import ResultsError from "../ResultsError/ResultsError";
+import { itemOverviewStyles } from "../../utilities/styles";
 
 interface ItemOverviewProps {
   searchInput: string;
@@ -124,7 +125,7 @@ const ItemsOverview: React.FC<ItemOverviewProps> = ({
   };
 
   return (
-    <View style={styles.itemsOverview}>
+    <View style={itemOverviewStyles.itemsOverview}>
       {dataChar ? (
         <FlatList
           data={dataChar.characters.results}
@@ -132,7 +133,7 @@ const ItemsOverview: React.FC<ItemOverviewProps> = ({
           keyExtractor={(item, index) => index.toString()}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
-          contentContainerStyle={styles.flatList}
+          contentContainerStyle={itemOverviewStyles.flatList}
         />
       ) : dataLoc ? (
         <FlatList
@@ -141,7 +142,7 @@ const ItemsOverview: React.FC<ItemOverviewProps> = ({
           keyExtractor={(item, index) => index.toString()}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
-          contentContainerStyle={styles.flatList}
+          contentContainerStyle={itemOverviewStyles.flatList}
         />
       ) : dataEpi ? (
         <FlatList
@@ -150,79 +151,11 @@ const ItemsOverview: React.FC<ItemOverviewProps> = ({
           keyExtractor={(item, index) => index.toString()}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
-          contentContainerStyle={styles.flatList}
+          contentContainerStyle={itemOverviewStyles.flatList}
         />
       ) : null}
-      {/*
-      <ScrollView
-        onScroll={(e) => handleScroll(e, onLoadMore)}
-        contentContainerStyle={styles.itemOverviewInner}
-      >
-        {loadingChar || loadingLoc || loadingEpi ? (
-          <Spinner />
-        ) : errorChar || errorLoc || errorEpi ? (
-          <ResultsError
-            message={`Error: we could not find the ${filterType}`}
-          />
-        ) : !dataChar && !dataLoc && !dataEpi ? (
-          <ResultsError
-            message={`Please use the search bar to find the ${filterType}`}
-          />
-        ) : dataChar && filterType === "characters" ? (
-          dataChar.characters.results.map(
-            (
-              character: {
-                name: string;
-                image: string;
-                species: string;
-                genre: string;
-                type: string;
-              },
-              i: number
-            ) => <CharacterItem key={i} {...character} />
-          )
-        ) : dataLoc && filterType === "locations" ? (
-          dataLoc.locations.results.map(
-            (
-              location: {
-                name: string;
-                type: string;
-                dimension: string;
-                residents: [];
-              },
-              i: number
-            ) => (
-              <Item key={i} name={location.name} attOne={location.dimension} />
-            )
-          )
-        ) : dataEpi && filterType === "episodes" ? (
-          dataEpi.episodes.results.map(
-            (
-              episode: {
-                name: string;
-                air_date: string;
-                episode: string;
-                characters: [];
-              },
-              i: number
-            ) => <Item key={i} name={episode.name} attOne={episode.episode} />
-          )
-        ) : null}
-      </ScrollView>
-        */}
     </View>
   );
 };
 
 export default ItemsOverview;
-
-const styles = StyleSheet.create({
-  itemsOverview: {
-    width: 400,
-  },
-  flatList: {
-    flexGrow: 1,
-    width: "100%",
-    alignItems: "center",
-  },
-});

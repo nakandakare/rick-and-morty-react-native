@@ -1,7 +1,8 @@
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
+import { Text, View  } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import CharacterItem from "../CharacterItem/CharacterItem";
+import {itemDetailStyles} from "../../utilities/styles";
 
 interface navigationProp {
   route: {
@@ -23,25 +24,25 @@ const ItemDetail: React.FC<navigationProp> = ({ route }) => {
   /*get the param from navigation*/
   const { name, dimension, type, episode, air_date } = route.params.item;
   return (
-    <View style={styles.itemDetailContainer}>
-      <View style={styles.itemDetailInner}>
-        <View style={styles.itemDetailMain}>
-          <Text style={styles.itemName}>{name}</Text>
+    <View style={itemDetailStyles.itemDetailContainer}>
+      <View style={itemDetailStyles.itemDetailInner}>
+        <View style={itemDetailStyles.itemDetailMain}>
+          <Text style={itemDetailStyles.itemName}>{name}</Text>
         </View>
         <View>
-          <Text style={styles.subText}>
+          <Text style={itemDetailStyles.subText}>
             {dimension ? `Dimension: ${dimension}` : `Episode: ${episode}`}
           </Text>
-          <Text style={styles.subText}>
+          <Text style={itemDetailStyles.subText}>
             {type ? `Type: ${type}` : `Air Date: ${air_date}`}
           </Text>
         </View>
         <View>
           <View>
-            <Text style={styles.characterNameTitle}>Characters</Text>
+            <Text style={itemDetailStyles.characterNameTitle}>Characters</Text>
           </View>
             <FlatList
-              contentContainerStyle={styles.characters}
+              contentContainerStyle={itemDetailStyles.characters}
               data={route.params.item.residents || route.params.item.characters}
               renderItem={({ item }) => <CharacterItem item={item} />}
               keyExtractor={(item, index) => index.toString()}
@@ -53,41 +54,3 @@ const ItemDetail: React.FC<navigationProp> = ({ route }) => {
 }
 
 export default ItemDetail;
-
-const styles = StyleSheet.create({
-  itemDetailContainer: {
-    height: "100%",
-    width: "100%",
-    backgroundColor: "#18191a",
-  },
-  itemDetailInner: {
-    padding: "8%",
-  },
-  itemDetailMain: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  itemName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "white",
-    padding: "3%",
-  },
-  subText: {
-    color: "white",
-    marginVertical: 15,
-    fontSize: 15,
-  },
-  characterNameTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-    paddingVertical: "5%",
-  },
-  characters: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

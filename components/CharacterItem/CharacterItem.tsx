@@ -1,12 +1,12 @@
 import React from "react";
 import {
-  StyleSheet,
   Text,
   View,
   Image,
   TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { charItemStyles } from "../../utilities/styles";
 
 interface characterItemProps {
   item: {
@@ -21,14 +21,14 @@ const CharacterItem: React.FC<characterItemProps> = ({item}) => {
     <TouchableWithoutFeedback
       onPress={() => navigation.navigate("CharacterDetail", {item})}
     >
-      <View style={styles.characterItem}>
+      <View style={charItemStyles.characterItem}>
         <Image
-          style={styles.characterImg}
+          style={charItemStyles.characterImg}
           source={{
             uri: item.image,
           }}
         />
-        <Text style={styles.characterName}>{item.name}</Text>
+        <Text style={charItemStyles.characterName}>{item.name}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -36,28 +36,3 @@ const CharacterItem: React.FC<characterItemProps> = ({item}) => {
 
 export default CharacterItem;
 
-const styles = StyleSheet.create({
-  characterItem: {
-    width: 300,
-    height: 60,
-    backgroundColor: "#383d42",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: "5%",
-    paddingVertical: "10%",
-    marginVertical: "2%",
-    borderRadius: 10,
-  },
-  characterImg: {
-    height: 60,
-    width: 60,
-    borderRadius: 10,
-    marginRight: "5%",
-  },
-  characterName: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-});
